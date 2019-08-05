@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>guomingde</title>
+	<style type="text/css">
+		form{width:400px; margin:0 auto; margin-bottom: 12px;}
+		input{height:24px; width:60px; }
+		a{
+			cursor:pointer; text-decoration: none; 
+			padding:6px 12px;  background: blueviolet;
+			font-size:19px; border-radius: 8px;
+		}
+		table{
+			border:2px solid #000; border-collapse: collapse;
+		}
+		tr,td,th{ 
+			border:1px solid #000; text-align: center;
+			height:24px; width:24px;
+		}
+		div{
+			height:18px; width:18px; border-radius:10px;
+			margin:4px; cursor:pointer;
+		}
+		.WHITE{height:12px; width:12px; border:3px solid #000;}
+		.RED{background: red;}
+		.BLANK{background: black;}
+	</style>
+	<script src="jquery-3.3.1.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		var dblans,ans; //计算数据
+		//var select = {}; //存储选中的点的className
+		var hang,lie,i,j,k;
+		
+		$('a').click(function(){
+			hang = $('#input2').val(); //获取行列值
+			lie = $('#input3').val();
+			for(i=0; i<hang; i++){ //生成表格
+				$('table').append("<tr class='"+i+"'></tr>");
+				for(j=0; j<lie; j++){
+					if(j==lie-1 || j==lie-2){ //最后两列特殊处理
+						$('tr:last').append("<td class='"+j+"'></td>");
+						continue;
+					}
+					if(i%2==0){
+						$('tr:last').append("<td class='"+j+"'></td>");
+						continue;
+					}
+					if(j==0){
+						$('tr:last').append("<td class='"+j+"'><div class='btn'></div></td>");
+						continue;
+					}
+					$('tr:last').append("<td class='"+j+"'><div></div></td>");
+				}
+			} 
+			
+			for(i=1; i<lie-2; i++){ //输入数字
+				$("tr:first td").eq(i).text(i);
+			}
+			//i=0; j=0; 清空i ,可以递增。
+			
+			$("tr:first td").last().text("红"); //最后两行计算数字
+			$("tr:first td").eq(lie-2).text("黑");
+			$("tr:first td").first().text("选择"); 
+			
+			$('tr:odd div').dblclick(function(){//偶数行允许点击
+				$(this).toggleClass('BLANK');
+			});
+			$('tr:odd div').click(function(){
+				$(this).toggleClass('RED');
+			});
+			
+			$('.btn').dblclick(function(){
+				var fatherName,selfName;
+				var show,showNumA,showB,showNumC;
+				var judge,className,num;
+				
+				fatherName = $(this).parent().parent().attr("class"); //判断是否是第一次点击
+				//selftName = $(this).attr("class").substring(4);  undefine
+				selfName = $(this).prop("class").substring(4); //获取自己的样式名,第四位开始 
+				console.log("selfName="+selfName);
+				//select[fatherName]=selfName;
+				show = $(this).parent().parent().children();
+				showNumA = $(this).parent().parent().next().children();
+				showB = $(this).parent().parent().next().next().children();
+				showNumC = $(this).parent().parent().next().next().next().children();
+				
+				if(fatherName == "1") //第一次点击进行初始化
+				{
+					//console.log("fatherName="+fatherName); //输出该数的类型String
+					for(i=1; i<=hang-3; i++)
+					{
+						 //获取第i个点的className
+						className = show.eq(i).find("div").attr("class");
+						if(className == "RED" || className == "BLANK")
+						{ 
+							showNumA.eq(i).html("1");
+						}
+					}
+				}
+				
+				for(i=1; i<=hang-3; i++){
+					className = show.eq(i).find("div").attr('class'); //决定下一行数值的className
+					judge = showB.eq(i).find("div").attr('class'); //判断是否需要填值的className
+					if(judge !="RED" && judge !="BLANK") //没有样式就跳过
+					{ 
+						continue;
+					}
+					
+					if(className==selfName)
+					{
+						showNumC.eq(i).html("1"); //className相同为1
+					}else
+					{
+						num =showNumA.eq(i).text(); //获得上上位的数字 $.type(num) String
+						if(num == "")
+						{
+							showNumC.eq(i).html("1"); //如果等于空，则为1
+						}else
+						{
+							showNumC.eq(i).html(num*2); //class 不同为2*i
+						}
+						
+					}
+				}
+				
+			});
+			
+			$('.btn').click(function(){
+				var fatherName,selfName;
+				var show,showNumA,showB,showNumC;
+				var judge,className,num;
+				var count,ans;
+				
+				fatherName = $(this).parent().parent().attr("class"); //判断是否是第一次点击
+				//selftName = $(this).attr("class").substring(4);  undefine
+				selfName = $(this).prop("class").substring(4); //获取自己的样式名,第四位开始 
+				//select[fatherName]=selfName;
+				show = $(this).parent().parent().children();
+				showNumA = $(this).parent().parent().next().children();
+				showB = $(this).parent().parent().next().next().children();
+				showNumC = $(this).parent().parent().next().next().next().find("td");
+				
+				if(fatherName == "1") //第一次点击进行初始化
+				{
+					//console.log("fatherName="+fatherName); //输出该数的类型String
+					for(i=1; i<=hang-3; i++)
+					{
+						 //获取第i个点的className
+						className = show.eq(i).find("div").attr("class");
+						if(className == "RED" || className == "BLANK")
+						{ 
+							showNumA.eq(i).html("1");
+						}
+					}
+				}
+				
+				for(i=1; i<hang; i++)
+				{ 
+					className = show.eq(i).find("div").attr('class'); //决定下一行数值的className
+					judge = showB.eq(i).find("div").attr('class'); //判断是否需要填值的className
+
+					//统计黑红结果
+					if(i == hang-2) //统计黑色的结果
+					{ console.log("黑");
+						count = Number(0); ans = 0;
+						for(j=1; j<=hang-3; j++)
+						{
+							judge = showB.eq(j).find("div").attr('class');
+							console.log(judge == "BLANK");
+							if(judge == "BLANK")
+							{
+								ans = showNumC.eq(j).text();
+								console.log("ans="+ans);
+								count += Number(ans);
+								console.log("count="+count);
+							}
+						}
+						console.log("countans="+count);
+						showNumC.eq(i).html(count); //写入黑色总数
+						continue;
+					}
+					
+					if(i == hang-1) //统计红色的结果
+					{console.log("红");
+						count = Number(0); ans = 0;
+						for(j=1; j<=hang-3; j++)
+						{
+							judge = showB.eq(j).find("div").attr('class');
+							if(judge == "RED")
+							{
+								ans = showNumC.eq(j).text();
+								console.log("ans = "+ans);
+								count += Number(ans);
+							}
+						}
+						
+						console.log("count="+count);
+						showNumC.eq(i).html(count); //写入红色总数
+						continue;
+					}
+					
+					if(judge !="RED" && judge !="BLANK") //没有样式就跳过，必须放在红黑结果统计之后
+					{ 
+						continue;
+					}
+
+					if(className==selfName)
+					{
+						showNumC.eq(i).html("1"); //className相同为1
+					}else
+					{
+						num =showNumA.eq(i).text(); //获得上上位的数字 $.type(num) String
+						if(num == "")
+						{
+							showNumC.eq(i).html("1"); //如果等于空，则为1
+						}else
+						{
+							if(num=="64") num = "1"; //超过64归1
+							showNumC.eq(i).html(num*2); //class 不同为2*i
+						}
+						
+					}
+				}	
+			});
+		});
+		
+	});
+	</script>
+</head>
+<body>
+	<form>
+		行：<input type="text" id="input2"/>
+		列：<input type="text" id="input3"/>
+		<a id="shumit">生成</a>
+		<p>单击为红色，双击为黑色，再次点击可取消。</p>
+	</form>
+	
+	<table>
+		<!--通过循环输入数据-->
+	</table>
+</body>
+</html>
