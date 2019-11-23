@@ -10,6 +10,7 @@
         window.onload = function () {
             let url = window.location.search;
             let title = url.replace(/^(\s|\?)+|(\s|\?)+$/g, '');
+			title = decodeURIComponent(title);
             生成文章(title);
         };
 
